@@ -101,7 +101,7 @@ def game_loop():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     # print('spacebar pressed')
-                    pygame.key.set_repeat(200000, 2000000)
+                    # pygame.key.set_repeat(200000, 2000000) # actually useless
                     y_change = -8
                     # play Sound
                     pygame.mixer.Sound.play(flap_wing)
