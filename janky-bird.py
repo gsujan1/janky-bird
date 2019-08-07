@@ -15,6 +15,10 @@ GREEN = (0, 255, 0)
 YELLOW = (255, 255, 0)
 RED = (255, 0, 0)
 
+# sound load in
+flap_wing = pygame.mixer.Sound('Butterfly-Wings.wav')
+pygame.mixer.music.load('Neon-Runner_Looping.wav')
+
 # game display window
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Janky Bird')
@@ -45,8 +49,8 @@ def message_display(text):
     textRect.center = ((WIDTH/2), (HEIGHT/2))
     screen.blit(textSurf, textRect)
     pygame.display.update()
-    time.sleep(2)
-    # restart game loop after 2 seconds
+    # restart game loop after 1.5 seconds
+    time.sleep(1.5)
     game_loop()
 
 def game_over():
@@ -75,12 +79,15 @@ def game_loop():
     pipe_x = 400
     pipe_y = random.randrange(HEIGHT * 0.22, HEIGHT)
     pipe_w = 75
-    pipe_h = HEIGHT - pipe_y
+    pipe_h = HEIGHT - pipe_y - 10
     pipe_speed = 5 # can slowly increase this, see line 125
 
     # pipe top pair
     pipe_yt = pipe_y - 150
     pipe_ht = 0 - pipe_yt
+
+    # music
+    pygame.mixer.music.play(-1)
 
     # EVENT HANDLER LOOP
     gameExit = False
@@ -94,8 +101,10 @@ def game_loop():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     # print('spacebar pressed')
-                    # pygame.key.set_repeat(10, 10000)
+                    pygame.key.set_repeat(200000, 2000000)
                     y_change = -8
+                    # play Sound
+                    pygame.mixer.Sound.play(flap_wing)
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_SPACE:
                     y_change = 6
@@ -118,7 +127,7 @@ def game_loop():
         if pipe_x <= -50:
             pipe_x = WIDTH + 50
             pipe_y = random.randrange(HEIGHT * 0.22, HEIGHT)
-            pipe_h = HEIGHT - pipe_y
+            pipe_h = HEIGHT - pipe_y - 10 # 10 included for ground clearance
             pipe_yt = pipe_y - 150
             pipe_ht = 0 - pipe_yt
             # dodge counter
@@ -129,6 +138,8 @@ def game_loop():
         # if bird hits ground or top of screen, game over
         y += y_change
         if y >= (HEIGHT - 10) or y <= 0:
+            # stop music
+            pygame.mixer.stop()
             game_over()
 
         # collision logic
@@ -136,6 +147,8 @@ def game_loop():
         # only detects collision with center of bird
         if x >= pipe_x and x <= pipe_x + pipe_w:
             if y <= pipe_yt - 10 or y >= pipe_y:
+                # stop music
+                pygame.mixer.stop()
                 game_over()
 
         pygame.display.update()
