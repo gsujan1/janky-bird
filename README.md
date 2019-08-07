@@ -2,5 +2,5 @@
 flappy bird clone using pygame
 
 requirements:
-python3
-pygame
+1. python3
+2. pygame
