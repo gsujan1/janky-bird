@@ -6,4 +6,5 @@ requirements:
 2. pygame
 
 how to play:
+
 press space to flap
