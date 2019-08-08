@@ -16,8 +16,8 @@ YELLOW = (255, 255, 0)
 RED = (255, 0, 0)
 
 # sound load in
-flap_wing = pygame.mixer.Sound('Butterfly-Wings.wav')
-pygame.mixer.music.load('Neon-Runner_Looping.wav')
+# flap_wing = pygame.mixer.Sound('Butterfly-Wings.wav')
+# pygame.mixer.music.load('Neon-Runner_Looping.wav')
 
 # game display window
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -28,6 +28,9 @@ pygame.display.set_icon(logo)
 # initializes our (in essence) fps counter
 clock = pygame.time.Clock()
 
+# pause boolean
+pause = False
+
 def add_bird(color, x_pos, y_pos, rad_size):
     pygame.draw.circle(screen, color, (x_pos, y_pos), rad_size)
 
@@ -35,13 +38,43 @@ def add_pipe(x_pos, y_pos, obsh, obsw, color):
     pygame.draw.rect(screen, color, [x_pos, y_pos, obsh, obsw])
 
 def pipes_dodged(count):
-    font = pygame.font.SysFont(None, 25)
-    text = font.render('Score: ' + str(count), True, WHITE)
-    screen.blit(text, (0,0))
+    score_font = pygame.font.SysFont(None, 35)
+    score_text = score_font.render('Score: ' + str(count), True, WHITE)
+    screen.blit(score_text, (0,0))
 
 def text_objects(text, font):
     textSurface = font.render(text, True, RED)
     return textSurface, textSurface.get_rect()
+
+def paused():
+    # screen.fill(WHITE)
+    pauseText = pygame.font.Font('freesansbold.ttf', 50)
+    pauseText1 = pygame.font.Font('freesansbold.ttf', 20)
+    textSurf, textRect = text_objects('PAUSED', pauseText)
+    textSurf1, textRect1 = text_objects('PRESS SPACE TO RESUME', pauseText1)
+    textRect.center = ((WIDTH/2), (HEIGHT/2))
+    textRect1.center = ((WIDTH/2), (HEIGHT - HEIGHT/2.5))
+    screen.blit(textSurf, textRect)
+    screen.blit(textSurf1, textRect1)
+
+    while pause:
+        # print('PAUSED')
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+
+            if event.type == pygame.KEYDOWN:
+                # maybe add escape logic here
+                # to quit game inside pause
+                if event.key == pygame.K_SPACE:
+                    unpause()
+        pygame.display.update()
+        clock.tick(10)
+
+def unpause():
+    global pause
+    pause = False
 
 def message_display(text):
     largeText = pygame.font.Font('freesansbold.ttf', 50)
@@ -57,6 +90,9 @@ def game_over():
     message_display('GAME OVER')
 
 def game_loop():
+    # call recently set global pause value inside gameloop to determine
+    # whether to keep running or keep pausing (if thats a word)
+    global pause
 
     # pipes dodged counter
     dodged = 0
@@ -73,7 +109,7 @@ def game_loop():
     size = 15
 
     # gravity for now
-    y_change = 6
+    y_change = 8
 
     # pipe vars
     pipe_x = 400
@@ -87,7 +123,7 @@ def game_loop():
     pipe_ht = 0 - pipe_yt
 
     # music
-    pygame.mixer.music.play(-1)
+    # pygame.mixer.music.play(-1)
 
     # EVENT HANDLER LOOP
     gameExit = False
@@ -99,15 +135,24 @@ def game_loop():
                 quit()
 
             if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    quit()
+                if event.key == pygame.K_p:
+                    # print('p pressed')
+                    pause = True
+                    paused()
                 if event.key == pygame.K_SPACE:
                     # print('spacebar pressed')
-                    # pygame.key.set_repeat(200000, 2000000) # actually useless
                     y_change = -8
                     # play Sound
-                    pygame.mixer.Sound.play(flap_wing)
+                    # pygame.mixer.Sound.play(flap_wing)
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_SPACE:
-                    y_change = 6
+                    y_change = 8
+                # if event.key == pygame.K_p:
+                    # pause = True
+                    # paused()
 
         # draws black background
         screen.fill(BLACK)
@@ -139,7 +184,7 @@ def game_loop():
         y += y_change
         if y >= (HEIGHT - 10) or y <= 0:
             # stop music
-            pygame.mixer.stop()
+            # pygame.mixer.stop()
             game_over()
 
         # collision logic
@@ -148,7 +193,7 @@ def game_loop():
         if x >= pipe_x and x <= pipe_x + pipe_w:
             if y <= pipe_yt - 10 or y >= pipe_y:
                 # stop music
-                pygame.mixer.stop()
+                # pygame.mixer.stop()
                 game_over()
 
         pygame.display.update()
