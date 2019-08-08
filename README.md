@@ -7,5 +7,7 @@ requirements:
 
 how to play:
 1. press space to flap
+2. press "p" to pause the game
+3. press "esc" key to exit game
 
 This game is obviously a work in progress, its horribly structured and cobbled together right now, but I will continue to update it as I learn more about the Python programming language and the Pygame library. The ultimate goal is to sic an AI on a hopefully more polished version of this game.
